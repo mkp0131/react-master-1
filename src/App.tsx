@@ -1,25 +1,32 @@
+import { isDarkAtom } from 'atoms';
+import BtnToggleTheme from 'components/BtnToggleTheme';
+import GlobalStyle from 'GlobalStyle';
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
+import Router from 'Router';
+import { ThemeProvider } from 'styled-components';
+import { darkTheme, lightTheme } from 'theme';
 
 function App() {
+  const [isDark, setIsDark] = useRecoilState(isDarkAtom);
+
+  useEffect(() => {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: Dark)').matches;
+
+    if (prefersDark) setIsDark(true);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <BtnToggleTheme />
+        <GlobalStyle />
+        <Router />
+      </ThemeProvider>
+    </>
   );
 }
 

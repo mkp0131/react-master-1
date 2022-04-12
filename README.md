@@ -1,46 +1,306 @@
-# Getting Started with Create React App
+# 리액트 마스터
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## styeld-component
 
-## Available Scripts
+### 설치
 
-In the project directory, you can run:
+```
+npm i styled-components
+// 타입스크립트 사용시 타입정의
+npm i -D @types/styled-components
+```
 
-### `npm start`
+### 사용법
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- 이미 정의된 styled 컴포넌트 상속 받아 사용 가능
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```js
+// Box 컴포넌트를 상속받아 Box2 라는 컴포넌트 생성
+const Box2 = styled(Box)`
+  background: red;
+`;
+```
 
-### `npm test`
+- props 전달
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```js
+const Box = styled.div`
+  background-color: ${(props) => props.bgColor};
+  width: 100px;
+  height: 100px;
+`;
 
-### `npm run build`
+function App() {
+  return (
+    <Father>
+      <Box bgColor="teal" />
+    </Father>
+  );
+}
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- attrs(): HTML 엘리먼트의 속성도 부여가능
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```js
+const Input = styled.input.attrs({ required: true })`
+  background-color: tomato;
+`;
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- 애니메이션 사용
 
-### `npm run eject`
+```js
+const rotationAnimation = keyframes`
+  0% {
+    transform:rotate(0deg);
+    border-radius:0px;
+  }
+  50% {
+    border-radius:100px;
+  }
+  100%{
+    transform:rotate(360deg);
+    border-radius:0px;
+  }
+`;
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+const Box = styled.div`
+  animation: ${rotationAnimation} 1s linear infinite;
+`;
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- 계단식 정의에도 styled 컴포넌트 사용 가능
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```js
+const Box = styled.div`
+  // Box 컴포넌트 안에 Emoji
+  ${Emoji}:hover {
+    font-size: 98px;
+  }
+`;
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+function App() {
+  return (
+    <Box>
+      <Emoji>🤩</Emoji>
+    </Box>
+  );
+}
+```
 
-## Learn More
+## 타입스크립트
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 설치
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- create-react-app 으로 자바스크립트 프로젝트를 만든후 변경하는 것은 비추!(tsconfig.json 이 생성이 안되는 오류가 있음.)
+
+```
+npx create-react-app my-app --template typescript
+```
+
+- 자바스크립트로 만들어진 패키지의 경우 @types 패키지를 설치해준다.
+
+```
+npm i @types/styled-components
+```
+
+### 활용
+
+#### Props
+
+- interface 로 props 의 type 을 명시
+- default 값을 사용할 경우 ?(옵셔널)로 타입이 명시되어 있어야한다.
+
+```js
+import styled from 'styled-components';
+
+interface CircleProps {
+  bgColor: string;
+  borderColor?: string;
+  txt?: string;
+}
+
+interface ContainerProps {
+  bgColor: string;
+  borderColor: string;
+}
+
+const Container =
+  styled.div <
+  ContainerProps >
+  `
+  width: 200px;
+  height: 200px;
+  background: ${(props) => props.bgColor};
+  border: 5px solid ${(props) => props.borderColor};
+  border-radius: 50%;
+`;
+
+const Circle = ({ bgColor, borderColor, txt = 'default' }: CircleProps) => {
+  return (
+    <Container bgColor={bgColor} borderColor={borderColor || bgColor}>
+      {txt}
+    </Container>
+  );
+};
+
+export default Circle;
+```
+
+#### State
+
+```js
+const Form = () => {
+  const [value, setValue] = useState < string > '';
+
+  const onChange = (event: React.FormEvent<HTMLInputElement>) => {
+    setValue(event.currentTarget.value);
+  };
+
+  return (
+    <form>
+      <input type="text" onChange={onChange} value={value} />
+      <button>서브밋</button>
+    </form>
+  );
+};
+```
+
+#### styled-components 사용
+
+- theme 사용시 styled.d.ts(생성) 에 type 을 명시
+- props.theme의 인터페이스로 사용
+- DefaultTheme 인터페이스는 비어 있으므로 확장
+
+```js
+// import original module declarations
+import 'styled-components';
+
+// and extend them!
+declare module 'styled-components' {
+  export interface DefaultTheme {
+    bgColor: string;
+
+    colors: {
+      main: string;
+      secondary: string;
+    };
+  }
+}
+```
+
+- index 에서 theme 을 import 하여 사용
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ThemeProvider } from 'styled-components';
+import App from './App';
+import { darkTheme, lightTheme } from './theme';
+
+let root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
+root.render(
+  <React.StrictMode>
+    <ThemeProvider theme={darkTheme}>
+      <App />
+    </ThemeProvider>
+  </React.StrictMode>
+);
+```
+
+## react-query
+
+- api.ts 를 생성 promise 를 return 하는 api 함수를 export
+
+```js
+const BASE_URL = 'https://api.coinpaprika.com/v1';
+
+export const getCoins = () => {
+  return fetch(`${BASE_URL}/coins`).then((res) => res.json());
+};
+
+export const getCoinData = (coinId: string) => {
+  return fetch(`${BASE_URL}/coins/${coinId}`).then((res) => res.json());
+};
+```
+
+- index.js 에 설정 queryClient 객체를 만들어 QueryClientProvider 컴포넌트의 props 로 전달
+
+```js
+// Create a client
+const queryClient = new QueryClient();
+
+ReactDOM.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={lightTheme}>
+        <App />
+      </ThemeProvider>
+    </QueryClientProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+- 컴포넌트에서 사용법
+
+```js
+  const { isLoading: dataLoading, data: coinData } = useQuery<ICoinData>(
+    ['data', 'coin'],
+    () => getCoinData(coinId!)
+  );
+```
+
+## recoil
+
+- 리액트 상태 관리 라이브러리
+
+### 사용법
+
+- root 파일 (index || app) 에 <RecoilRoot> 컴포넌트 세팅
+
+```js
+import { RecoilRoot } from 'recoil';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+- state 를 저장할 atoms.js 파일을 생성 사용하고 싶은 state 를 atom() 함수를 이용하여 생성
+
+```js
+import { atom } from 'recoil';
+
+export const isDarkAtom = atom({
+  key: 'isDark',
+  default: false,
+});
+```
+
+- 사용하고 싶은 컴포넌트에서 useRecoilState(`atom명`) 을 이용하여 사용
+
+```js
+import { isDarkAtom } from 'atoms';
+import { useRecoilState } from 'recoil';
+
+const BtnToggleTheme = () => {
+  const [isDark, setIsDark] = useRecoilState(isDarkAtom);
+
+  return (
+    <button
+      onClick={() => {
+        setIsDark((prev) => !prev);
+      }}
+    >
+      Toglle
+    </button>
+  );
+};
+```
