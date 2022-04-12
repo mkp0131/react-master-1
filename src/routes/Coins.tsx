@@ -5,6 +5,7 @@ import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
+import BtnToggleTheme from 'components/BtnToggleTheme';
 
 const CoinList = styled.ul`
   display: flex;
@@ -52,6 +53,7 @@ const Coins = () => {
           <title>코인 리스트 | 다운비트</title>
         </Helmet>
       </HelmetProvider>
+      <BtnToggleTheme />
       <div className="container">
         <div className="inner">
           <h1>다운비트</h1>

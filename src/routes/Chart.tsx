@@ -1,6 +1,7 @@
 import { getCoinOHLC } from 'api';
 import { isDarkAtom } from 'atoms';
 import Loader from 'components/Loader';
+import { useEffect } from 'react';
 import ApexChart from 'react-apexcharts';
 import { useQuery } from 'react-query';
 import { useLocation, useParams } from 'react-router-dom';

@@ -1,5 +1,4 @@
 import { isDarkAtom } from 'atoms';
-import BtnToggleTheme from 'components/BtnToggleTheme';
 import GlobalStyle from 'GlobalStyle';
 import React from 'react';
 import { useEffect } from 'react';
@@ -22,7 +21,6 @@ function App() {
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-        <BtnToggleTheme />
         <GlobalStyle />
         <Router />
       </ThemeProvider>
